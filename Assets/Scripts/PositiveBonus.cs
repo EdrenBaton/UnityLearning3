@@ -28,7 +28,7 @@ public class PositiveBonus : InteractableObject, IFlickable, IFlyable, IRotatabl
         _material = GetComponent<Renderer>().material;
         _material.color = Random.ColorHSV();
     }
-    public override void Act()
+    public override void Execute()
     {
         Flick();
         Fly();

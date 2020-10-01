@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public abstract class InteractableObject : MyGameObject, IActable
+public abstract class InteractableObject : BaseGameObject, IExecutable
 {
     private event Action<InteractableObject> ObjectDestroyed;
 
@@ -18,14 +18,14 @@ public abstract class InteractableObject : MyGameObject, IActable
 
     protected abstract void Interact();
 
-    public abstract void Act();
+    public abstract void Execute();
 
-    public void AddSubscriber(Action<InteractableObject> method)
+    public void AddSubscriberOnDestroy(Action<InteractableObject> method)
     {
         ObjectDestroyed += method;
     }
 
-    public void RemoveSubscriber(Action<InteractableObject> method)
+    public void RemoveSubscriberOnDestroy(Action<InteractableObject> method)
     {
         ObjectDestroyed -= method;
     }

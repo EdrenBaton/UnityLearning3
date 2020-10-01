@@ -1,46 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    private List<InteractableObject> _interactableObjects;
-    private MoveController _playerMoveController;
+    private InteractableObjectsCollection _interactableObjects;
     private CameraMoveController _cameraMoveController;
     private ScoreController _scoreController;
+    private MoveController _moveController;
+    private PlayerBase _player;
 
     private void Awake()
     {
-        _scoreController = new ScoreController(new UiTextScoreViewer());
+        var resourceManager = new ResourcesManager();
         
-        FindObjectsOfType<MyGameObject>().ToList().ForEach(o => o.Initialize());
-
-        _interactableObjects = FindObjectsOfType<InteractableObject>().ToList();
-        foreach (var interactableObject in _interactableObjects)
-        {
-            interactableObject.AddSubscriber(DeleteObjectFromCollection);
-            interactableObject.AddSubscriber(_scoreController.UpdateScore);
-        }
-
-        _playerMoveController = FindObjectOfType<MoveController>();
-        _cameraMoveController = FindObjectOfType<CameraMoveController>();
+        _interactableObjects = new InteractableObjectsCollection();
+        _scoreController = new ScoreController(new UiTextScoreViewer());
+        _player = resourceManager.Player;
+        _moveController = new MoveController(_player);
+        _cameraMoveController = new CameraMoveController(_player, resourceManager.MainCamera);
+        
+        FindObjectsOfType<BaseGameObject>().ToList().ForEach(o => o.Initialize());
+        
+        _interactableObjects.AddOnDestroySubscribers(new Action<InteractableObject> [] {_scoreController.UpdateScore});
     }
 
     private void Update()
     {
-        foreach (var interactableObject in _interactableObjects) interactableObject.Act();
+        // Тут пока что обманул сам себя, перемудрил с коллекцией
+        _interactableObjects.ExecuteAll();
 
-        _playerMoveController.Move();
-    }
-
-    private void LateUpdate()
-    {
-        _cameraMoveController.SetPosition();
-    }
-
-    private void DeleteObjectFromCollection(InteractableObject interactableObject)
-    {
-        interactableObject.RemoveSubscriber(DeleteObjectFromCollection);
-        _interactableObjects.Remove(interactableObject);
+        _cameraMoveController.Execute();
+        _moveController.Execute();
     }
 }

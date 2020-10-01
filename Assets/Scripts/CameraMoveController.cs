@@ -1,19 +1,25 @@
 ﻿using UnityEngine;
 
-public class CameraMoveController : MyGameObject
+public class CameraMoveController : IExecutable
 {
-    private PlayerMoveController _player;
-    
-    private Vector3 _offset;
+    private readonly PlayerBase _player;
+    private readonly Camera _camera;
+    private readonly Vector3 _offset;
 
-    public void SetPosition()
+    private readonly float _xOffset = 0.0f;
+    private readonly float _yOffset = 5.0f;
+    private readonly float _zOffset = -5.0f;
+
+    public CameraMoveController(PlayerBase player, Camera camera)
     {
-        transform.position = _player.transform.position + _offset;
+        _player = player;
+        _camera = camera;
+        _camera.transform.LookAt(_player.transform);
+        _offset.Set(_xOffset, _yOffset, _zOffset);
     }
 
-    public override void Initialize()
+    public void Execute()
     {
-        _player = FindObjectOfType<PlayerMoveController>();
-        _offset = transform.position - _player.transform.position;
+        _camera.transform.position = _player.transform.position + _offset;
     }
 }

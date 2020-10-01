@@ -27,7 +27,7 @@ public class NegativeBonus : InteractableObject, IFlickable, IFlyable, IRotatabl
         
     }
 
-    public override void Act()
+    public override void Execute()
     {
         Flick();
         Fly();

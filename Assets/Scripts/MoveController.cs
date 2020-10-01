@@ -1,22 +1,20 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public abstract class MoveController : MyGameObject
+public class MoveController : IExecutable
 {
-    [SerializeField] protected float _movementSpeed = 3.0f;
-    [SerializeField] protected float _acceleration = 1.0f;
+    private readonly IMovable _player;
 
-    private void Start()
+    public MoveController(IMovable player)
     {
-        if (_movementSpeed <= 0.0f)
-        {
-            throw new MyException("Скорость объекта должна быть больше 0");
-        }
-        if (_acceleration <= 0.0f)
-        {
-            throw new MyException("Ускорение объекта должна быть больше 0");
-        }
+        _player = player;
     }
-
-    public abstract void Move();
+    
+    public void Execute()
+    {
+        var moveRight = Input.GetAxis("Horizontal");
+        var moveForward = Input.GetAxis("Vertical");
+        var moveVertical = 0.0f;
+        
+        _player.Move(moveRight, moveVertical, moveForward);
+    }
 }
